@@ -1,39 +1,45 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-# Folder repo git lokal
-REPO_DIR="$HOME/backup_repo"
+# === Konfigurasi ===
+FOLDER_BACKUP="$HOME/my_backup_files"
+BACKUP_DIR="$HOME/backup_repo"
+LOG_DIR="$HOME/.backup"
+mkdir -p "$LOG_DIR"
 
-# File-file yang mau di-backup (sesuaikan path-nya)
-FILES_TO_BACKUP=(
-  "/data/data/com.termux/files/usr/etc/bash.bashrc"
-  "$HOME/anti_hilang.sh"
-  "$HOME/.bot_listener.sh"
-)
+BOT_TOKEN="7992625201:AAG4_8ay_NEySER9gxjKNBLKdGPdKJKnsEg"
+CHAT_ID="7983170165"
 
-# Token & repo (jika mau push otomatis, pastikan sudah set remote origin)
-# Kalau belum, setting dulu dengan:
-# cd $REPO_DIR
-# git remote add origin https://github.com/4lf4king/Termux_Backup.git
+WAKTU=$(date +"%Y-%m-%d_%H-%M-%S")
+BACKUP_FILE="$BACKUP_DIR/backup_$WAKTU.tar.gz"
+LOG_FILE="$LOG_DIR/backup.log"
 
-cd "$REPO_DIR" || { echo "Repo folder tidak ditemukan!"; exit 1; }
+# === Cek perubahan ===
+cd "$FOLDER_BACKUP"
+CHANGED=$(git status --porcelain)
 
-# Copy file yang mau backup ke repo folder
-for file in "${FILES_TO_BACKUP[@]}"; do
-  if [ -f "$file" ]; then
-    cp "$file" "$REPO_DIR/"
-    echo "Copied $file"
-  else
-    echo "File $file tidak ditemukan, dilewati."
-  fi
-done
+if [ -z "$CHANGED" ]; then
+  echo "[$WAKTU] ❌ Tidak ada perubahan, backup dibatalkan." | tee -a "$LOG_FILE"
+  curl -s -X POST "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" \
+    -d chat_id="$CHAT_ID" \
+    -d text="❌ Tidak ada perubahan, backup $WAKTU dibatalkan."
+  exit 0
+fi
 
-# Tambah semua file ke git
+# === Kompres folder ===
+cd "$HOME"
+tar -czf "$BACKUP_FILE" "$(basename "$FOLDER_BACKUP")"
+
+# === Pindah ke repo & commit ===
+cp "$BACKUP_FILE" "$BACKUP_DIR"
+cd "$BACKUP_DIR"
 git add .
+git commit -m "📦 Backup otomatis - $WAKTU"
+git push -u origin main
 
-# Commit dengan pesan tanggal & waktu
-git commit -m "Backup otomatis - $(date '+%Y-%m-%d %H:%M:%S')" || echo "Tidak ada perubahan untuk di commit."
+# === Log dan kirim notifikasi ===
+echo "[$WAKTU] ✅ Backup berhasil: $BACKUP_FILE" | tee -a "$LOG_FILE"
+curl -s -X POST "https://api.telegram.org/bot$BOT_TOKEN/sendMessage" \
+  -d chat_id="$CHAT_ID" \
+  -d text="✅ Backup berhasil jam $WAKTU\nFile: $(basename "$BACKUP_FILE")"
 
-# Push ke GitHub (branch main)
-git push origin main
-
-echo "Backup selesai!"
+exit 0
