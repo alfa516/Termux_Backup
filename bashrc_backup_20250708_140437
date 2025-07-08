@@ -1,0 +1,652 @@
+# =============================
+# Custom bash.bashrc by 4l_f4 😎
+# =============================
+
+# Bersihkan layar & tampilkan ASCII art nama
+# ===============================
+# Auto Update Package saat Startup 📦
+# ===============================
+echo -e "\e[34m[•] Mengecek update package...\e[0m"
+pkg update -y && pkg upgrade -y > /dev/null 2>&1
+echo -e "\e[32m[✓] Update selesai!\e[0m"
+sleep 0.5
+clear
+figlet 4l_f4 | lolcat
+
+# =============================
+# 🔄 Animasi Loading Gabungan Estetik by 4l_f4😎
+# =============================
+
+# 🌈 Rainbow Dots
+for i in '.' '..' '...'; do
+    echo -ne "\e[1;35mMemulai Termux$i\r"
+    sleep 0.3
+done
+sleep 0.5
+echo -e "\e[0m"
+clear
+
+# 🔁 Spinner Loading
+spinner="/-\|"
+echo -ne "\e[1;33mLoading "
+for i in {1..10}; do
+    for x in ${spinner}; do
+        echo -ne "$x\b"
+        sleep 0.1
+    done
+done
+echo -e "\e[0m\n"
+# 📊 Progress Bar
+echo -ne "\e[1;32mProgress: "
+for i in {1..20}; do
+    echo -n "#"
+    sleep 0.05
+done
+echo -e "\e[0m Done!\n"
+sleep 0.5
+termux-tts-speak "Sistem siap digunakan"
+echo -e "\e[36m$(date '+%A, %d %B %Y - %H:%M:%S')\e[0m"
+# =============================
+# ⏰ Penjadwalan Task Otomatis
+# =============================
+jadwal=$(date +%H)
+
+if [ "$jadwal" -ge 5 ] && [ "$jadwal" -lt 11 ]; then
+    echo -e "\e[1;36mSelamat pagi, Alfa! Saatnya semangat belajar 💪\e[0m"
+elif [ "$jadwal" -ge 11 ] && [ "$jadwal" -lt 15 ]; then
+    echo -e "\e[1;33mSelamat siang, Alfa! Jangan lupa istirahat 🥗\e[0m"
+elif [ "$jadwal" -ge 15 ] && [ "$jadwal" -lt 18 ]; then
+    echo -e "\e[1;32mSelamat sore, Alfa! Ngoding santai yuk 😎\e[0m"
+else
+    echo -e "\e[1;35mSelamat malam, Alfa! Waktunya refleksi dan ngoprek 🤖\e[0m"
+fi
+
+# Tambahkan waktu sekarang (optional)
+echo -e "\e[36mWaktu sekarang: $(date +"%H:%M:%S")\e[0m"
+# Ucapan suara + teks warna
+shuf -n 1 <<EOF | lolcat
+Selamat datang, Alfa!
+Siap ngoding hari ini?
+Belajar itu keren!
+We are NeveR Die 😎
+EOF
+
+termux-tts-speak "Selamat datang di Termux, Alfa!"
+# ================================
+# Deteksi Jenis Koneksi Internet 📡
+# ================================
+echo -e "\e[36m[📡] Mengecek koneksi internet...\e[0m"
+koneksi=$(termux-wifi-connectioninfo 2>/dev/null)
+
+if [[ $koneksi == *"SSID"* ]]; then
+    echo -e "\e[32m[✓] Terkoneksi via WiFi\e[0m"
+elif ping -c1 google.com > /dev/null 2>&1; then
+    echo -e "\e[33m[!] Terkoneksi via Data Seluler\e[0m"
+else
+    echo -e "\e[31m[✗] Tidak ada koneksi internet!\e[0m"
+fi
+
+sleep 1
+termux-tts-speak "Warning, battery low. Only $battery_level percent left"
+sleep 0.5
+# ==============================
+# Penjadwalan Task Otomatis 🕓
+# ==============================
+jadwal=$(date +%H)
+
+if [[ $jadwal -eq 06 ]]; then
+    echo -e "\e[33m[☀️] Selamat pagi, Alfa! Saatnya backup...\e[0m"
+    cp ~/.bashrc ~/backup_bashrc_pagi_$(date +%d%m%Y)
+elif [[ $jadwal -eq 12 ]]; then
+    echo -e "\e[36m[🍜] Waktunya istirahat siang. Tetap semangat, Alfa!\e[0m"
+elif [[ $jadwal -eq 21 ]]; then
+    echo -e "\e[34m[🌙] Selamat malam, Alfa! Cek koneksi sebelum tidur.\e[0m"
+    ping -c 3 google.com > /dev/null && echo -e "\e[32m[✔] Internet aktif\e[0m" || echo -e "\e[31m[x] Tidak ada koneksi!\e[0m"
+fi
+if [ "$jadwal" -ge 5 ] && [ "$jadwal" -lt 11 ]; then
+    echo -e "\e[1;36mSelamat pagi, Alfa! Saatnya semangat belajar 💪\e[0m"
+    termux-tts-speak "Selamat pagi, Alfa. Saatnya semangat belajar"
+elif [ "$jadwal" -ge 11 ] && [ "$jadwal" -lt 15 ]; then
+    echo -e "\e[1;33mSelamat siang, Alfa! Jangan lupa istirahat 🍽️\e[0m"
+    termux-tts-speak "Selamat siang, Alfa. Jangan lupa istirahat"
+elif [ "$jadwal" -ge 15 ] && [ "$jadwal" -lt 18 ]; then
+    echo -e "\e[1;32mSelamat sore, Alfa! Ngoding santai yuk 😎\e[0m"
+    termux-tts-speak "Selamat sore, Alfa. Ngoding santai yuk"
+else
+    echo -e "\e[1;35mSelamat malam, Alfa! Waktunya refleksi dan ngoprek 🤖\e[0m"
+    termux-tts-speak "Selamat malam, Alfa. Waktunya refleksi dan ngoprek"
+fi
+# Backup otomatis bash.bashrc setiap hari jam 05 pagi
+if [[ "$jadwal" -eq 05 ]]; then
+  mkdir -p ~/.backup
+  cp /data/data/com.termux/files/usr/etc/bash.bashrc ~/.backup/bashrc_$(date +%y%m%d)
+  echo -e "\e[36m[🗂️] Backup bash.bashrc tersimpan di ~/.backup/\e[0m"
+fi
+cp ~/.bashrc ~/.backup/bashrc_user_$(date +%y%m%d)
+# ===============================
+# Login Palsu Gaya Hacker 😎
+# ===============================
+USERNAME="alfa"
+PASSWORD="termux123"
+
+echo -e "\e[33m[!] Login diperlukan untuk mengakses menu...\e[0m"
+read -p "Username: " user
+read -sp "Password: " pass
+echo
+
+if [[ "$user" == "$USERNAME" && "$pass" == "$PASSWORD" ]]; then
+    echo -e "\e[32m[✓] Login berhasil, selamat datang $user!\e[0m"
+# =============================
+# MENU INTERAKTIF by 4l_f4 😎
+# =============================
+while true; do
+  echo -e "\e[36m"
+  echo "╭────────────────────────────╮"
+  echo "│     MENU TOOLS by 4l_f4    │"
+  echo "├────────────────────────────┤"
+  echo "│ [1] Cek Status Baterai 🔋  │"
+  echo "│ [2] Cek Jenis Koneksi 🌐   │"
+  echo "│ [3] Update Package 🔄      │"
+  echo "│ [4] Motivasi Random ✨     |"
+  echo "│ [5] Hacker Mode 👨‍💻       │"
+  echo "│ [0] Keluar 🚪              │"
+  echo "╰────────────────────────────╯"
+  echo -ne "\e[33mPilih menu: \e[0m"
+  read menu
+
+  case $menu in
+    1)
+      echo -e "\n\e[1;34mCek status baterai...\e[0m"
+      termux-battery-status | lolcat || {
+        echo "Persentase: $(cat /sys/class/power_supply/battery/capacity)%"
+        echo "Suhu: $(awk '{print $1/10}' /sys/class/power_supply/battery/temp)°C"
+      }
+      ;;
+    2)
+      echo -e "\n\e[1;34mMengecek jenis koneksi...\e[0m"
+      if dumpsys connectivity | grep -q "type: WIFI"; then
+        echo -e "\e[32m✔ Terkoneksi via Wi-Fi\e[0m"
+      elif dumpsys connectivity | grep -q "type: MOBILE"; then
+        echo -e "\e[32m✔ Terkoneksi via Data Seluler\e[0m"
+      else
+        echo -e "\e[31m✘ Tidak ada koneksi!\e[0m"
+      fi
+      ;;
+    3)
+      echo -e "\e[36m🔄 Updating packages...\e[0m"
+      pkg update -y && pkg upgrade -y
+      echo -e "\e[32m✔ Paket berhasil diperbarui!\e[0m"
+      ;;
+    4)
+      motivasi=(
+        "Kesulitan adalah bagian dari perjalanan sukses 🌱"
+        "Terus belajar, karena ilmu tak akan habis 🧠"
+        "Jangan takut gagal, karena itu bagian dari proses 🚀"
+        "Kerja keras tak akan mengkhianati hasil 💪"
+        "Jangan menyerah, Alfa! Masa depanmu cerah ✨"
+      )
+      acak=$((RANDOM % ${#motivasi[@]}))
+      echo -e "\e[1;35m${motivasi[$acak]}\e[0m"
+      ;;
+     5)
+      echo -e "\n\e[1;31mMengaktifkan Hacker Mode...\e[0m"
+      sleep 1
+      cmatrix
+      ;;
+    0)
+      echo -e "\e[33mSampai jumpa, Alfa! 👋\e[0m"
+      break
+      ;;
+    *)
+      echo -e "\e[31mPilihan tidak valid!\e[0m"
+      ;;
+  esac
+
+  echo -e "\n\e[90mTekan Enter untuk kembali ke menu...\e[0m"
+  read
+  clear
+    sleep 1
+
+# Pilih motivasi secara acak
+acak=$((RANDOM % ${#motivasiku[@]}))
+echo -e "\e[36m[•] Mengecek & update package...\e[0m"
+for i in $(seq 1 3); do echo -n "." && sleep 0.2; done
+pkg update -y && pkg upgrade -y > /dev/null
+echo -e "\e[32m[✔] Paket sudah up to date!\e[0m"
+sleep 0.5
+echo -e "\e[1;32m${motivasiku[$acak]}\e[0m"
+else
+    echo -e "\e[31m[×] Username atau Password salah!\e[0m"
+    exit
+fi
+# Tampilkan waktu saat ini
+date | lolcat
+
+# ================================
+# Deteksi Jenis Koneksi 🌐
+# ================================
+echo -e "\e[36m[•] Mengecek jenis koneksi...\e[0m"
+
+if dumpsys connectivity | grep -q "type: WIFI"; then
+  echo -e "\e[32m[✔] Terkoneksi melalui Wi-Fi\e[0m"
+elif dumpsys connectivity | grep -q "type: MOBILE"; then
+  echo -e "\e[32m[✔] Terkoneksi melalui Data Seluler\e[0m"
+else
+  echo -e "\e[31m[✘] Tidak ada koneksi aktif\e[0m"
+fi
+# Cek koneksi internet
+# ===============================
+# Cek Status Baterai dan Suhu 🔋🌡️
+# ===============================
+
+# ===============================
+# Peringatan baterai rendah 🔋⚠️
+# ===============================
+battery_level=$(cat /sys/class/power_supply/battery/capacity)
+
+if [ "$battery_level" -le 20 ]; then
+termux-tts-speak "Warning, battery low. Only $battery_level percent left"
+    echo -e "\e[1;31m⚠️  Baterai tinggal $battery_level%! Segera charge...\e[0m"
+    termux-tts-speak "Warning, battery low. Only $battery_level percent left"
+    termux-notification --title "Baterai Lemah" --content "Baterai tinggal $battery_level%! Segera colok charger." --priority high
+fi
+echo -e "\e[1;34mCek status baterai dan suhu...\e[0m"
+if termux-battery-status &>/dev/null; then
+  # Jika Termux API berhasil
+  termux-battery-status | grep -e 'precentage|temperature' | lolcat
+else
+  # Jika gagal, gunakan alternatif manual
+  echo -e "\e[33mAPI error, menampilkan info cadangan:\e[0m"
+  echo "Persentase: $(cat /sys/class/power_supply/battery/capacity)%" | lolcat
+  echo "Suhu: $(awk '{print $1/10}' /sys/class/power_supply/battery/temp) °C" | lolcat
+fi
+echo ""
+echo -ne "Mengecek koneksi"
+for i in {1..3}; do
+   echo -n "."
+   sleep 0.3
+done
+echo
+if ping -c 1 google.com > /dev/null 2>&1; then
+  echo -e "\e[32mKoneksi Internet Aktif!\e[0m"
+else
+  echo -e "\e[31mTidak ada koneksi Internet!\e[0m"
+fi
+
+# =============================
+# Auto Bersihkan Cache 🧼
+# =============================
+echo -e "\e[36m[•] Membersihkan cache...\e[0m"
+
+# Bersihkan direktori cache
+rm -rf ~/.cache/* &> /dev/null
+rm -rf /data/data/com.termux/files/usr/tmp/* &> /dev/null
+rm -rf $PREFIX/tmp/* &> /dev/null
+
+echo -e "\e[32m[✓] Cache dibersihkan!\e[0m"
+# =============================
+# Efek Ketik Hacker 😎
+# =============================
+function ketik() {
+    teks="$1"
+    for ((i=0; i<${#teks}; i++)); do
+        echo -n "${teks:$i:1}"
+        sleep 0.03
+    done
+    echo
+}
+
+echo -e "\e[32m[✓] Cache dibersihkan!\e[0m"
+sleep 0.5
+
+# Efek Ketik sebelum menu
+ketik "Menjalankan menu utama..."
+sleep 0.3
+# Fungsi Loading Palsu
+loading() {
+  for i in {1..3}; do
+    echo -ne "\e[33mMemuat sistem"
+    for j in {1..3}; do
+      echo -ne "."
+      sleep 0.3
+    done
+    echo -ne "\r"
+    sleep 0.3
+  done
+  echo
+  echo -e "\e[32mSelesai!\e[0m"
+}
+
+clear
+figlet 4l_f4 | lolcat
+termux-tts-speak "Selamat datang Alfa"
+# === AUTO BACKUP bash.bashrc ===
+backup_folder="$HOME/backup_bashrc"
+mkdir -p "$backup_folder"
+cp /data/data/com.termux/files/usr/etc/bash.bashrc "$backup_folder/bashrc_$(date +%Y%m%d_%H%M%S)"
+# ========================
+# Fungsi Tampilkan Quotes 🧠
+# ========================
+quotes_motivasi() {
+  quotes=(
+    "Jangan pernah menyerah, keajaiban butuh waktu."
+    "Terus belajar, karena rasa penasaran adalah kekuatan."
+    "Kesuksesan berawal dari rasa ingin tahu."
+    "Gagal itu proses menuju hebat."
+    "Jangan takut salah, takutlah jika tak mencoba."
+    "Langkah kecil hari ini lebih baik dari diam selamanya."
+    "Pemenang bukan yang selalu benar, tapi yang tidak menyerah."
+    "Kamu lebih kuat dari yang kamu pikirkan."
+  )
+  total=${#quotes[@]}
+  index=$((RANDOM % total))
+  echo -e "\e[36m💬 ${quotes[$index]}\e[0m"
+}
+quotes_motivasi() {
+  quotes=(
+    "Jangan pernah menyerah, keajaiban butuh waktu."
+    "Terus belajar, karena rasa penasaran adalah kekuatan."
+    "Kesuksesan berawal dari rasa ingin tahu."
+    "Gagal itu proses menuju hebat."
+    "Jangan takut salah, takutlah jika tak mencoba."
+    "Langkah kecil hari ini lebih baik dari diam selamanya."
+    "Pemenang bukan yang selalu benar, tapi yang tidak menyerah."
+    "Kamu lebih kuat dari yang kamu pikirkan."
+  )
+  total=${#quotes[@]}
+  index=$((RANDOM % total))
+  echo -e "\e[36m💬 ${quotes[$index]}\e[0m"
+  termux-tts-speak "${quotes[$index]}"
+}
+# ===============================
+# FUNGSI INFO HARI INI 📆
+# ===============================
+info_hari_ini() {
+  echo -e "\e[36m📅 Hari ini: $(date '+%A, %d %B %Y')"
+  echo -e "⏰ Jam: $(date '+%H:%M:%S')\e[0m"
+}
+# ==============================
+# FUNGSI INFO BATERAI & SUHU 🔋🌡️
+# ==============================
+info_baterai_suhu() {
+  battery_level=$(termux-battery-status | grep level | awk '{print $2}' | tr -d ',')
+  battery_status=$(termux-battery-status | grep status | awk '{print $2}' | tr -d '",')
+  suhu=$(termux-battery-status | grep temperature | awk '{print $2}' | tr -d ',')
+
+  echo -e "\e[33m🔋 Baterai: $battery_level% ($battery_status)"
+  echo -e "🌡️  Suhu: $suhu°C\e[0m"
+}
+# ===============================
+# FUNGSI DETEKSI JENIS KONEKSI 🌐
+# ===============================
+cek_koneksi() {
+  koneksi=$(ip route | grep -Eo 'wlan0|rmnet_data|eth0')
+
+  if [[ $koneksi == "wlan0" ]]; then
+    echo -e "\e[36m🌐 Koneksi: WiFi\e[0m"
+  elif [[ $koneksi == "rmnet_data" ]]; then
+    echo -e "\e[36m📶 Koneksi: Data Seluler\e[0m"
+  else
+    echo -e "\e[31m❌ Tidak terhubung ke jaringan!\e[0m"
+  fi
+}
+# ============================
+# AUTO TASK JADWAL OTOMATIS ⏰
+# ============================
+auto_task() {
+  current_time=$(date +%H:%M)
+
+  if [[ "$current_time" == "06:00" ]]; then
+    echo -e "\e[33m🔄 Auto update harian dimulai...\e[0m"
+    pkg update -y && pkg upgrade -y
+    echo -e "\e[32m✅ Update selesai!\e[0m"
+  fi
+}
+# =============================
+# Fungsi Menu Interaktif 📋
+# =============================
+quote_motivasi() {
+  quotes=(
+    "Jangan menyerah, Alfa! Setiap error adalah guru 😎"
+    "Ngoding itu seni, Termux itu kanvasnya! 🎨"
+    "Fokus dulu, hasil belakangan 🔥"
+    "Satu script sehari, hacker sejati! 💻"
+    "Belajar Termux sekarang, panen hasilnya nanti 🚀"
+    "Kamu hebat, Alfa! Tinggal selangkah lagi 💪"
+    "Yang penting bukan alatnya, tapi semangatnya 🔧✨"
+  )
+  # Ambil salah satu quote secara acak
+  index=$(( RANDOM % ${#quotes[@]} ))
+  echo -e "\e[1;32m💡 ${quotes[$index]}\e[0m"
+}
+function menu() {
+  clear
+  loading
+  quote_motivasi  # Tambahan ini, penting
+  
+  echo -e "\e[1;36m=== MENU UTAMA ===\e[0m"
+  ...
+echo -e "\e[1;32m💡 ${quotes[$index]}\e[0m"
+termux-tts-speak "${quotes[$index]}"
+sleep 0.5
+info_hari_ini() {
+  echo -e "\e[1;34m📅 Hari ini: $(date +"%A, %d %B %Y")\e[0m"
+  echo -e "\e[1;36m⏰ Jam: $(date +"%H:%M:%S")\e[0m"
+}
+cek_koneksi() {
+  if ping -q -c 1 -W 1 google.com > /dev/null; then
+    echo -e "\e[1;32m🌐 Koneksi internet: Aktif\e[0m"
+  else
+    echo -e "\e[1;31m❌ Tidak ada koneksi internet!\e[0m"
+  fi
+}
+backup_bashrc() {
+  mkdir -p /sdcard/backup_termux
+  cp /data/data/com.termux/files/usr/etc/bash.bashrc /sdcard/backup_termux/bash.bashrc_$(date +%Y%m%d_%H%M%S)
+  echo -e "\e[1;32m✅ Backup berhasil disimpan di /sdcard/backup_termux/\e[0m"
+}
+cek_ip_pub() {
+  echo -e "\e[36m🌐 Mengambil IP publik...\e[0m"
+  ip=$(curl -s https://ipinfo.io/ip)
+  if [[ -n "$ip" ]]; then
+    echo -e "\e[32m✅ IP Publik kamu: $ip\e[0m"
+  else
+    echo -e "\e[31m❌ Gagal mengambil IP publik!\e[0m"
+  fi
+}
+download_sqlmap() {
+  echo -e "\e[36m📥 Mendownload sqlmap...\e[0m"
+  git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git ~/sqlmap 2>/dev/null
+
+  if [ -d ~/sqlmap ]; then
+    echo -e "\e[32m✅ Sqlmap berhasil di-download ke ~/sqlmap\e[0m"
+  else
+    echo -e "\e[31m❌ Gagal download sqlmap!\e[0m"
+  fi
+}
+install_populer() {
+  echo -e "\e[36m📦 Menginstall package populer...\e[0m"
+  pkg install -y curl git wget python figlet toilet ruby neofetch cmatrix
+  pip install --upgrade pip
+  gem install lolcat
+  echo -e "\e[32m✅ Semua package populer telah terinstal!\e[0m"
+}
+backup_bashrc() {
+  folder="/sdcard/backup_termux"
+  file="bash.bashrc_$(date +"%d-%m-%Y_%H-%M-%S")"
+
+  mkdir -p "$folder"
+  cp /data/data/com.termux/files/usr/etc/bash.bashrc "$folder/$file"
+
+  if [ -f "$folder/$file" ]; then
+    echo -e "\e[32m✅ Backup berhasil disimpan di $folder/$file\e[0m"
+  else
+    echo -e "\e[31m❌ Gagal menyimpan backup!\e[0m"
+  fi
+}
+read -p 'Pilih tools: ' pilih_tools
+
+case $pilih_tools in
+  1)
+    echo -e "\e[1;36m⏳ Mengecek kecepatan internet...\e[0m"
+    pkg install -y curl > /dev/null 2>&1
+    curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python
+    ;;
+  2)
+    cek_dependency_penting
+    ;;
+  3)
+    cd /sdcard/
+    echo -e "\e[1;36m📁 Sekarang kamu berada di /sdcard/\e[0m"
+    ls
+    ;;
+  4)
+    menu
+    ;;
+  *)
+    echo -e "\e[31m❌ Pilihan tidak valid!\e[0m"
+    ;;
+esac
+read -p "Pilih menu: " pilih
+case $pilih in
+  1)
+    apt update && apt upgrade -y
+    ;;
+  2)
+    cmatrix
+    ;;
+  3)
+    neofetch
+    ;;
+  4)
+    ping google.com
+    ;;
+  5)
+    cek_ip_pub
+    ;;
+  6)
+    install_populer
+    ;;
+  7)
+    download_sqlmap
+    ;;
+  8)
+   echo -e "\n\e[1;34m=== Navigasi Folder Favorit ===\e[0m"
+   echo -e " [1] 📥 /sdcard/Download"
+   echo -e " [2] 🏠 $HOME"
+   echo -e " [3] ⚙️  /data/data/com.termux/files/usr/etc"
+   echo -n "Pilih folder: "; read pilih
+   case $pilih in
+    1) cd /sdcard/Download && echo -e "\e[32mBerpindah ke /sdcard/Download\e[0m";;
+    2) cd $HOME && echo -e "\e[32mBerpindah ke $HOME\e[0m";;
+    3) cd /data/data/com.termux/files/usr/etc && echo -e "\e[32mBerpindah ke /usr/etc\e[0m";;
+    *) echo -e "\e[31mPilihan folder tidak valid\e[0m";;
+  esac
+  ;;
+  9)
+    tools_alfa
+    ;;
+#!/bin/bash
+
+# Warna
+hijau="\e[32m"
+kuning="\e[33m"
+merah="\e[31m"
+reset="\e[0m"
+
+echo -e "${hijau}🔧 Memulai instalasi custom Termux by 4l_f4...${reset}"
+sleep 1
+
+# Update dan Upgrade Termux
+echo -e "${kuning}🔄 Update & Upgrade package...${reset}"
+pkg update -y && pkg upgrade -y
+
+# Install paket yang dibutuhkan
+echo -e "${kuning}📦 Menginstall semua dependency...${reset}"
+pkg install -y figlet toilet lolcat curl python tsu termux-api
+
+# Backup bash.bashrc lama
+echo -e "${kuning}📁 Membackup bash.bashrc lama...${reset}"
+cp /data/data/com.termux/files/usr/etc/bash.bashrc /data/data/com.termux/files/usr/etc/bash.bashrc_backup
+
+# Pastikan file bash.bashrc custom ada di folder yang sama
+if [ -f "bash.bashrc" ]; then
+    cp bash.bashrc /data/data/com.termux/files/usr/etc/bash.bashrc
+    echo -e "${hijau}✅ File bash.bashrc baru berhasil diterapkan.${reset}"
+else
+    echo -e "${merah}❌ File bash.bashrc tidak ditemukan di direktori ini.${reset}"
+    exit 1
+fi
+
+# Buat folder backup otomatis jika belum ada
+mkdir -p ~/.backup
+
+# Selesai
+echo -e "${hijau}✅ Instalasi selesai! Silakan buka ulang Termux untuk melihat hasilnya.${reset}"
+  *)
+    echo -e "\e[31m❌ Pilihan tidak valid!\e[0m"
+    ;;
+esac
+  clear
+  echo -e "\e[1;35m=== TOOLS KHUSUS 4l_f4 ===\e[0m"
+  echo "1. Speedtest internet"
+  echo "2. Cek dependency penting"
+# ===============================
+# CEK DEPENDENCY PENTING 🧪
+# ===============================
+cek_dependency_penting() {
+  dependencies=("curl" "git" "wget" "figlet" "lolcat" "neofetch")
+  echo -e "\e[36m🔍 Mengecek dependency penting...\e[0m"
+  for dep in "${dependencies[@]}"; do
+    if ! command -v $dep > /dev/null 2>&1; then
+      echo -e "\e[31m❌ $dep belum terinstal\e[0m"
+    else
+      echo -e "\e[32m✅ $dep tersedia\e[0m"
+    fi
+  done
+}
+  echo "3. Navigasi folder favorit"
+  echo "4. Kembali"
+  read -p "Pilih tools: " pilih_tools
+
+  case $pilih_tools in
+    1)
+  echo -e "\e[36m🚀 Menjalankan speedtest...\e[0m"
+  clear
+  speedtest-cli
+  ;;
+    2)
+      cek_dependency_penting;;
+    3)
+      echo -e "\e[34mNavigasi ke /sdcard/Download...\e[0m"
+      cd /sdcard/Download && ls
+      ;;
+    4)
+      menu
+      ;;
+    *)
+      echo "Pilihan tidak valid!"
+      ;;
+  esac
+}
+
+
+# Jalankan loading palsu sebelum menu
+for i in {1..3}; do
+   echo -ne "\e[33mMemuat sistem"
+   for j in {1..3}; do
+      echo -ne "."
+      sleep 0.3
+   done
+   echo -ne "\r"
+   sleep 0.3
+done
+echo -e "\e[32mSelesai!\e[0m"
+sleep 0.5
+
+
+# Jalankan menu otomatis saat buka Termux
+menu
+
+# Prompt tetap keren
+PS1="[\u@\h]\$ "
